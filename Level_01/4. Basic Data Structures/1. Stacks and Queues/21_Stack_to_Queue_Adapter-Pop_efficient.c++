@@ -3,16 +3,16 @@
 3. Here is the list of functions that you are supposed to complete
      3.1. push -> Should accept new data in LIFO manner.
      3.2. pop -> Should remove and return data in LIFO manner. If not available, print 
-      Stack underflow" and return -1.
-     3.3. top -> Should return data in LIFO manner. If not available, print "Stack 
-     underflow" and return -1.
-     3.4. size -> Should return the number of elements available in the stack.
+     "Stack underflow" and return -1.
+    3.3. top -> Should return data in LIFO manner. If not available, print "Stack 
+    underflow" and return -1.
+    3.4. size -> Should return the number of elements available in the stack.
 4. Input and Output is managed for you.
 
-Note -> push and size should work in constant time. pop and top should work in linear time.
+Note -> pop, top and size should work in constant time. push should work in linear time.
 
 Constraints
-Note -> push and size should work in constant time. pop and top should work in linear time.
+Note -> pop, top and size should work in constant time. push should work in linear time.
 
 Format
 Input
@@ -91,47 +91,31 @@ class QueueToStackAdapter{
     }
     
     void push(int data){
-        mainQ.push(data);
-    }
-
-    int top(){
-        if (mainQ.size() == 0){
-            cout<<"Stack underflow"<<endl;
-            return -1;
+        if(mainQ.size()==0){
+            mainQ.push(data);
+            return;
         }
-        while(mainQ.size()>1){
+        while(mainQ.size()>0){
             int f = mainQ.front();
             mainQ.pop();
             helperQ.push(f);
         }
-        int rem = mainQ.front();
-        mainQ.pop();
-        helperQ.push(rem);
+        mainQ.push(data);
         while(helperQ.size()>0){
             int f = helperQ.front();
             helperQ.pop();
             mainQ.push(f);
         }
+    }
+
+    int top(){
+        int rem = mainQ.front();
         return rem;
     }
 
     int pop(){
-        if (mainQ.size() == 0){
-            cout<<"Stack underflow"<<endl;
-            return -1;
-        }
-        while(mainQ.size()>1){
-            int f = mainQ.front();
-            mainQ.pop();
-            helperQ.push(f);
-        }
         int rem = mainQ.front();
         mainQ.pop();
-        while(helperQ.size()>0){
-            int f = helperQ.front();
-            helperQ.pop();
-            mainQ.push(f);
-        }
         return rem;
     }
 };
@@ -139,7 +123,7 @@ class QueueToStackAdapter{
 int main(){
     QueueToStackAdapter st;
     string str;
-    cin>>str;  
+    cin>>str;
     while(str!="quit"){
         if(str=="push"){
             int val;
@@ -168,12 +152,12 @@ int main(){
 
 /*Time & Space Complexity Analysis:-
 
-Push - O(1): We are just adding the element in the main queue.
+Push - O(n): We are first removing all elements from main queue and adding them to helper queue, which is n * O(1) = O(n), 
+then add the current element to be pushed to main queue, which is O(1), then add elements back from the helper queue by removing them one by one, which is n * O(1) = O(n) again.
+Hence, the total time complexity will be O(n) per call, where n is the number of elements already present in the queue.
 
-Size - O(1): We are returning the size of the main queue.
+Size - O(1): We are just returning mainQ.size().
 
-Pop (or Top) - O(n):
+Pop - O(1): Checking if the queue has 0 size or not, and then popping the front element(using mainQ.remove()) are O(1) constant operations.
 
-Firstly, we are dequeuing size elements from the main queue adding them in the helper queue, which takes n * O(1) = O(n) time.
-Now, we are doing the reverse process (removing n elements from the helper queue and adding them to the main queue), which again takes O(n) time.
-Hence, total time taken will be O(n + n) = O(n).*/
+Top - O(1): Checking if the queue has 0 size or not, and then returning the front element (using mainQ.peek()) are O(1) constant operations.*/
