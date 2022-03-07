@@ -1,11 +1,6 @@
-addFirst 10
-addFirst 20
-addLast 30
-addLast 40
-addLast 50
-addFirst 60
-removeAt 2
-display
-reverseDI
-display
-quit
+Sample Input
+11
+1 2 3 4 5 6 7 8 9 10 11
+3
+100
+200

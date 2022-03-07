@@ -1,20 +1,6 @@
 /*1. You are given a partially written LinkedList class.
-2. You are required to complete the body of findIntersection function. The function is passed two linked lists which start separately but merge at a node and become common thereafter. The function is expected to find the point where two linked lists merge. You are not allowed to use arrays to solve the problem.
-3. Input and Output is managed for you. 
-
-1                                 
-  \
-    2
-      \
-        3           9
-          \        / 
-           4     8
-            \   /
-              5*
-               \
-                6
-                 \
-                  7
+2. You are required to complete the body of kReverse function. The function is expected to tweak the list such that all groups of k elements in the list get reversed and linked. If the last set has less than k elements, leave it as it is (don't reverse).
+3. Input and Output is managed for you.
 
 Constraints
 1. Time complexity -> O(n)
@@ -29,29 +15,31 @@ Output is managed for you
 
 Example
 Sample Input
-5
-1 2 3 4 5
-8
-11 22 33 44 55 66 77 88
-2
+11
+1 2 3 4 5 6 7 8 9 10 11
 3
+100
+200
 
 Sample Output
-44*/
+1 2 3 4 5 6 7 8 9 10 11 
+3 2 1 6 5 4 9 8 7 10 11 
+100 3 2 1 6 5 4 9 8 7 10 11 200*/
 
 #include <iostream>
 #include <bits/stdc++.h>
 using namespace std;
 
 class Node{
-public:
+    public:
         int data = 0;
         Node *next = nullptr;
+
         Node(int data)
         {
             this->data = data;
         }
-};
+    };
 
 class linkedlist{    
 public:
@@ -138,8 +126,10 @@ public:
         {
             Node *prev = getNodeAt(idx - 1);
             Node *curr = prev->next;
+
             prev->next = node;
             curr->next = node;
+
             this->size++;
         }
     }
@@ -291,86 +281,41 @@ public:
         Node *node = getNodeAt(idx);
         return node->data;
     }
-};
-
-    Node* getMid(Node* head, Node* tail){
-        Node* slow = head, *fast = head;
-        while(fast->next != tail && fast->next->next != tail){
-            fast = fast->next->next;
-            slow = slow->next;
+    
+public:
+    void kReverse(int k){
+        linkedlist prev;
+        while(this->size > 0){
+            linkedlist curr;   
+            if(this->size >= k){
+                for(int i = 0; i < k; i++){
+                    int val = this->getFirst();
+                    this->removeFirst(val);
+                    curr.addFirst(val);
+                }
+            }
+            else{
+                int sz = this->size;
+                for(int i = 0; i < sz; i++){
+                    int val = this->getFirst();
+                    this->removeFirst(val);
+                    curr.addLast(val);
+                }
+            }
+            if(prev.size==0){
+                prev = curr;
+            }
+            else{
+                prev.tail->next = curr.head;
+                prev.tail = curr.tail;
+                prev.size += curr.size;
+            }
         }
-        return slow;
+        this->head = prev.head;
+        this->tail = prev.tail;
+        this->size = prev.size;
     }
-    
-    linkedlist mergeTwoSortedLists(linkedlist l1, linkedlist l2) {
-          linkedlist ans;
-          Node* one = l1.head;
-          Node* two = l2.head;  
-          while(one != nullptr && two != nullptr){
-              if(one->data < two->data){
-                  ans.addLast(one->data);
-                  one = one->next;
-              }
-              else{
-                  ans.addLast(two->data);
-                  two = two->next;
-              }
-          }
-          while(one!=nullptr){
-              ans.addLast(one->data);
-              one = one->next;
-          }
-          while(two !=nullptr){
-              ans.addLast(two->data);
-              two = two->next;
-          }     
-          return ans;
-    }
-    
-    linkedlist mergeSort(Node* head,Node* tail ){
-        if(head == tail){
-            linkedlist base;
-            base.addLast(head->data);
-            return base;
-        }   
-        Node* mid = getMid(head,tail);
-        linkedlist fsh = mergeSort(head, mid);
-        linkedlist ssh = mergeSort(mid->next, tail);   
-        return mergeTwoSortedLists(fsh,ssh);
-    }
-    
-    int addTwoLists(Node* on, Node* tn, int pio, int pit, linkedlist & res){
-      if(on == nullptr && tn == nullptr){
-        return 0;
-      }
-      int carry = 0;
-      int data = 0;
-      if(pio > pit){
-        carry = addTwoLists(on->next, tn, pio - 1, pit, res);
-        data = carry + on->data;
-      } 
-      else if(pio < pit){
-        carry = addTwoLists(on, tn->next, pio, pit - 1, res);
-        data = carry + tn->data;
-      } 
-      else {
-        carry = addTwoLists(on->next, tn->next, pio - 1, pit - 1, res);
-        data = carry + on->data + tn->data;
-      }
-      carry = data / 10;
-      data = data % 10;
-      res.addFirst(data);
-      return carry;
-    }
-
-    linkedlist addTwoLists(linkedlist one, linkedlist two) {
-      linkedlist res ;
-      int carry = addTwoLists(one.head, two.head, one.size, two.size, res);
-      if(carry > 0){
-        res.addFirst(carry);
-      }
-      return res;
-    }
+};
     
 linkedlist makeList() {
     linkedlist l;
@@ -384,70 +329,30 @@ linkedlist makeList() {
     return l;
 }
 
-int findIntersection(linkedlist one, linkedlist two)
-{
-     Node *on = one.head;
-     Node *tn = two.head;
-     if (one.size > two.size)
-     {
-       for (int i = 0; i < one.size - two.size; i++)
-       {
-         on = on->next;
-       }
-     }
-     else
-     {
-       for (int i = 0; i < two.size - one.size; i++)
-       {
-         tn = tn->next;
-       }
-     }
-     while (on != tn)
-     {
-       on = on->next;
-       tn = tn->next;
-     }
-     return on->data;
-}
-
 int main(){
-    linkedlist l1= makeList();
-    linkedlist l2= makeList();
-    int li;
-    cin>>li;
-    int di;
-    cin>>di;
-    if (li == 1) {
-      Node * n = l1.getNodeAt(di);
-      if (l2.size > 0) {
-        l2.tail->next = n;
-      } 
-      else {
-        l2.head = n;
-      }
-      l2.tail = l1.tail;
-      l2.size += l1.size - di;
-    } 
-    else {
-      Node *n = l2.getNodeAt(di);
-      if (l1.size > 0) {
-        l1.tail->next = n;
-      } 
-      else {
-        l1.head = n;
-      }
-      l1.tail = l2.tail;
-      l1.size += l2.size - di;   
-    }
-    int s =findIntersection(l1,l2);
-    cout <<s<< endl;
+    linkedlist l = makeList();
+    int k;
+    cin >>k;
+    int a;
+    cin >>a;
+    int b;
+    cin >>b;
+    cout<<l.toString()<< endl;
+    l.kReverse(k);
+    cout<<l.toString()<< endl;
+    l.addLast(b);
+    l.addFirst(a);
+    cout<<l.toString()<< endl;
     return 0;
 }
 
 /*Time Complexity: O(n)
 
-Since a "while loop" is used in the program, therefore the time complexity is linear.
+We are processing each node from the original linked list, and adding it in the current linked list (or directly to the previous linked list if size < k).
+Hence, time complexity is equal to O(n) where n = number of nodes in linked list.
 
 Space Complexity: O(1)
 
-Since no extra space is used in the program, therefore the space complexity is constant.*/
+We are not using any extra space in this solution. 
+As discussed in previous problems, we are REMOVING nodes from the given list and then only adding them into the current (or previous) list. 
+Hence, only constant space O(1) is taken, to form new linked list's head, tail & size integer variables.*/
